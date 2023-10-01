@@ -26,3 +26,22 @@ impl From<(Point3, Vector3)> for Ray {
         }
     }
 }
+impl Copy for Ray {}
+impl Clone for Ray {
+    fn clone(&self) -> Self {
+        Ray::from((self.direction, self.origin))
+    }
+    fn clone_from(&mut self, source: &Self) {
+        self.direction = source.direction.clone();
+        self.origin = source.origin.clone();
+    }
+}
+
+pub struct RayCastIntersection {
+    pub point: Point3,
+    pub norm: Vector3,
+    pub reflect: f32,
+}
+pub trait RayCollider {
+    fn cast_ray(&self, ray: &Ray) -> Option<Vec<RayCastIntersection>>;
+}

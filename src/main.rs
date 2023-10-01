@@ -1,6 +1,7 @@
 mod vector3;
 mod color;
 mod ray;
+mod sphere;
 
 use std::io::Write;
 
@@ -8,8 +9,9 @@ use color::Color;
 use env_logger;
 use log::debug;
 use vector3::{Point3, Vector3};
+use sphere::Sphere;
 
-use crate::{ray::Ray, color::write_color, vector3::MatrixDot};
+use crate::{ray::{Ray, RayCollider}, color::write_color};
 
 const ASPECT_RATIO: f32 = 16.0 / 9.0;
 const IMAGE_WIDTH: i32 = 256;
@@ -37,10 +39,7 @@ fn main() {
     let viewport_u = Vector3::from((VIEWPORT_WIDTH, 0.0, 0.0));
     let viewport_v = Vector3::from((0.0, -VIEWPORT_HEIGHT, 0.0));
 
-    let sphere_center = Point3::from((0.0, 0.0, -1.0));
-    let sphere_radius = 0.5_f32;
-
-    let cam_to_sphere = camera_center - sphere_center;
+    let sphere = Sphere::from((0.5, Point3::from((0.0, 0.0, -1.0))));
 
     let pixel_delta_u = viewport_u / IMAGE_WIDTH as f32;
     let pixel_delta_v = viewport_v / IMAGE_HEIGHT as f32;
@@ -58,13 +57,15 @@ fn main() {
         for x in 0..IMAGE_WIDTH {
             let pixel_center = pixel00_loc + (pixel_delta_u * x as f32) + (pixel_delta_v * y as f32);
             let ray_direction = (pixel_center - camera_center).to_unit();
-            let a = ray_direction.norm_squared();
-            let b = ray_direction.dot(&cam_to_sphere);
-            let c = cam_to_sphere.norm_squared() - sphere_radius.powi(2);
-            let sphere_condition = b.powi(2) - a*c;
-
             let ray = Ray::from((camera_center, ray_direction));
-            let color = if sphere_condition < 0.0 { ray_color(&ray) } else { Color::from((1.0, 0.0, 0.0)) };
+            let raycast_result = sphere.cast_ray(&ray);
+            let color = match raycast_result {
+                Some(result) => {
+                    let norm = &result[0].norm;
+                    Color::from((norm.x + 1.0, norm.y + 1.0, norm.z + 1.0)) * 0.5
+                },
+                None => ray_color(&ray)
+            };
 
             let mut string = &mut String::new();
             write_color(&mut string, &color);
