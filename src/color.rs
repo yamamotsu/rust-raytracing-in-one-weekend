@@ -1,5 +1,7 @@
-use std::{error::Error, fmt};
-use crate::vector3::Vector3 as Color;
+use std::{fmt};
+use crate::vector3::Vector3;
+
+pub type Color = Vector3;
 
 pub fn write_color(output: &mut dyn std::fmt::Write, color: &Color) -> () {
     let rgb = Color::from((color.x * 255.999, color.y * 255.999, color.z * 255.999));

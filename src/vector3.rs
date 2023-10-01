@@ -1,7 +1,7 @@
 use num_traits::Float as Number;
 use std::ops;
 
-pub struct Vector3<T: Number = f64> {
+pub struct Vector3<T: Number = f32> {
     pub x: T,
     pub y: T,
     pub z: T,
@@ -20,17 +20,6 @@ impl<T: Number> Vector3<T> {
     pub fn to_unit(self) -> Vector3::<T> {
         self / self.norm()
     }
-}
-
-impl Vector3<f64> {
-    pub fn new() -> Self {
-        Vector3 {
-            x: 0.0,
-            y: 0.0,
-            z: 0.0,
-        }
-    }
-
 }
 
 impl<T: Number> Copy for Vector3::<T> {}
@@ -299,7 +288,7 @@ mod tests {
 
     #[test]
     fn should_throw_error_when_to_unit_with_zero_vec() {
-        let vec1 = Vector3::new();
+        let vec1 = Vector3::from((0.0, 0.0, 0.0));
 
         let actual = vec1.to_unit();
         assert!(actual.x.is_nan() && actual.y.is_nan() && actual.z.is_nan());

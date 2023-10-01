@@ -1,19 +1,19 @@
 use crate::vector3::{Point3, Vector3};
 
 pub struct Ray {
-    origin: Point3,
-    direction: Vector3,
+    pub origin: Point3,
+    pub direction: Vector3,
 }
 
 impl Ray {
     pub fn new() -> Self {
         Ray {
-            origin: Point3::new(),
+            origin: Point3::from((0.0, 0.0, 0.0)),
             direction: Vector3::from((1.0, 0.0, 0.0)),
         }
     }
 
-    pub fn at(self, t: f64) -> Vector3 {
+    pub fn at(self, t: f32) -> Vector3 {
         self.origin + self.direction * t
     }
 }
