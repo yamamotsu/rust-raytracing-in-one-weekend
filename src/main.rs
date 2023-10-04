@@ -1,17 +1,19 @@
 mod vector3;
 mod color;
 mod ray;
-mod sphere;
+mod objects;
+mod interval;
 
 use std::io::Write;
-
 use color::Color;
 use env_logger;
 use log::debug;
 use vector3::{Point3, Vector3};
-use sphere::Sphere;
+use objects::sphere::Sphere;
+use objects::hittable::{Hittables, Raycaster};
 
-use crate::{ray::{Ray, RayCollider}, color::write_color};
+use crate::interval::Interval;
+use crate::{ray::Ray, color::write_color};
 
 const ASPECT_RATIO: f32 = 16.0 / 9.0;
 const IMAGE_WIDTH: i32 = 256;
@@ -40,6 +42,9 @@ fn main() {
     let viewport_v = Vector3::from((0.0, -VIEWPORT_HEIGHT, 0.0));
 
     let sphere = Sphere::from((0.5, Point3::from((0.0, 0.0, -1.0))));
+    let ground = Sphere::from((100.0, Point3::from((0.0, -100.5, -1.0))));
+    let objects: Vec<&dyn Raycaster> = vec![&sphere, & ground];
+    let hittables = Hittables::from(objects);
 
     let pixel_delta_u = viewport_u / IMAGE_WIDTH as f32;
     let pixel_delta_v = viewport_v / IMAGE_HEIGHT as f32;
@@ -58,10 +63,9 @@ fn main() {
             let pixel_center = pixel00_loc + (pixel_delta_u * x as f32) + (pixel_delta_v * y as f32);
             let ray_direction = (pixel_center - camera_center).to_unit();
             let ray = Ray::from((camera_center, ray_direction));
-            let raycast_result = sphere.cast_ray(&ray);
-            let color = match raycast_result {
+            let color = match hittables.hit(&ray, Interval::universe()) {
                 Some(result) => {
-                    let norm = &result[0].norm;
+                    let norm = result.norm;
                     Color::from((norm.x + 1.0, norm.y + 1.0, norm.z + 1.0)) * 0.5
                 },
                 None => ray_color(&ray)

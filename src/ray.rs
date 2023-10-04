@@ -36,12 +36,3 @@ impl Clone for Ray {
         self.origin = source.origin.clone();
     }
 }
-
-pub struct RayCastIntersection {
-    pub point: Point3,
-    pub norm: Vector3,
-    pub reflect: f32,
-}
-pub trait RayCollider {
-    fn cast_ray(&self, ray: &Ray) -> Option<Vec<RayCastIntersection>>;
-}
