@@ -11,6 +11,16 @@ impl Interval {
         self.min < x && x < self.max
     }
 
+    pub fn clamp(&self, value: f32) -> f32 {
+        if value < self.min {
+            return self.min;
+        }
+        if value > self.max {
+            return self.max;
+        }
+        value
+    }
+
     pub fn empty() -> Self {
         Interval { min: f32::INFINITY, max: f32::NEG_INFINITY }
     }
@@ -27,7 +37,6 @@ impl Clone for Interval {
             max: self.max,
         }
     }
-
     fn clone_from(&mut self, source: &Self) {
         self.min = source.min;
         self.max = source.max;
