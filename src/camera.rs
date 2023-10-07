@@ -2,7 +2,10 @@ use log::debug;
 use rand::random;
 
 use crate::{
-    vector3::{Point3, Vector3},
+    vectors::{
+        vector3::{Point3, Vector3},
+        utils,
+    },
     objects::hittable::{Hittables, Raycaster, HitRecord},
     ray::Ray, interval::Interval,
     color::{Color, write_color},
@@ -15,6 +18,7 @@ pub struct Camera {
     image_width: u32,
     focal_length: f32,
     samples_per_pixel: u32,
+    max_depth: i32,
 
     image_height: u32,
     center: Point3,
@@ -31,7 +35,7 @@ impl Camera {
             for x in 0..self.image_width {
                 let mut color: Color = Color::from((0.0, 0.0, 0.0));
                 for _ in 0..self.samples_per_pixel {
-                    color += self.ray_color(&self.get_ray(x, y), world);
+                    color += self.ray_color(&self.get_ray(x, y), world, self.max_depth);
                 }
                 color /= self.samples_per_pixel as f32;
 
@@ -64,14 +68,21 @@ impl Camera {
         Color::from((1.0, 1.0, 1.0)) * (1.0 - alpha) + Color::from((0.5, 0.7, 1.0)) * alpha
     }
 
-    fn ray_color_object(&self, hit_record: &HitRecord) -> Color {
-        let norm = hit_record.norm;
-        Color::from((norm.x + 1.0, norm.y + 1.0, norm.z + 1.0)) * 0.5
+    fn ray_color_object(&self, direction: &Vector3) -> Color {
+        Color::from((direction.x + 1.0, direction.y + 1.0, direction.z + 1.0)) * 0.5
     }
 
-    fn ray_color(&self, ray: &Ray, world: &Hittables) -> Color {
-        match world.hit(&ray, Interval::from((0.0, f32::INFINITY))) {
-            Some(result) => self.ray_color_object(&result),
+    fn ray_color(&self, ray: &Ray, world: &Hittables, depth: i32) -> Color {
+        if depth <= 0 {
+            return Color::from((0.0, 0.0, 0.0));
+        }
+
+        match world.hit(&ray, Interval::from((0.001, f32::INFINITY))) {
+            Some(result) => {
+                let direction = Vector3::<f32>::random_unit_vector() + result.norm;
+                let ray_reflected = Ray::from((result.point, direction));
+                self.ray_color(&ray_reflected, world, depth - 1) * 0.7
+            },
             None => self.ray_color_background(&ray)
         }
     }
@@ -82,6 +93,7 @@ pub struct CameraParams {
     pub image_width: u32,
     pub focal_length: f32,
     pub samples_per_pixel: u32,
+    pub max_depth: i32,
 }
 
 impl From<CameraParams> for Camera {
@@ -90,6 +102,7 @@ impl From<CameraParams> for Camera {
         let image_width = value.image_width;
         let focal_length = value.focal_length;
         let samples_per_pixel = value.samples_per_pixel;
+        let max_depth = value.max_depth;
 
         let _image_height = (image_width as f32 / aspect_ratio) as u32;
         let image_height = if _image_height >= 1 { _image_height } else { 1 };
@@ -118,7 +131,8 @@ impl From<CameraParams> for Camera {
             pixel00_loc,
             pixel_delta_u,
             pixel_delta_v,
-            samples_per_pixel
+            samples_per_pixel,
+            max_depth,
         }
     }
 }

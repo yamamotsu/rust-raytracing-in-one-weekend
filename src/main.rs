@@ -1,4 +1,4 @@
-mod vector3;
+mod vectors;
 mod color;
 mod ray;
 mod objects;
@@ -7,16 +7,17 @@ mod camera;
 
 use std::io::Write;
 use env_logger;
-use vector3::{Point3, Vector3};
+use vectors::vector3::{Point3, Vector3};
 use objects::sphere::Sphere;
 use objects::hittable::{Hittables, Raycaster};
 
 use crate::camera::{Camera, CameraParams};
 
 const ASPECT_RATIO: f32 = 16.0 / 9.0;
-const IMAGE_WIDTH: u32 = 256;
-const FOCAL_LENGTH: f32 = 1.0;
+const IMAGE_WIDTH: u32 = 765;
+const FOCAL_LENGTH: f32 = 1.5;
 const SAMPLES_PER_PIXEL: u32 = 100;
+const MAX_DEPTH: i32 = 50;
 
 fn main() {
     // render
@@ -37,6 +38,7 @@ fn main() {
         image_width: IMAGE_WIDTH,
         focal_length: FOCAL_LENGTH,
         samples_per_pixel: SAMPLES_PER_PIXEL,
+        max_depth: MAX_DEPTH,
     });
     camera.render(&hittables);
 }

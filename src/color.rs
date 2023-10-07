@@ -1,5 +1,5 @@
 use std::fmt;
-use crate::{vector3::Vector3, interval::Interval};
+use crate::{vectors::vector3::Vector3, interval::Interval};
 
 pub type Color = Vector3;
 
@@ -12,7 +12,7 @@ pub fn write_color(output: &mut dyn std::fmt::Write, color: &Color) -> () {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::vector3::Vector3;
+    use crate::vectors::vector3::Vector3;
 
     #[test]
     fn should_write_color() {

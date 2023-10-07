@@ -1,6 +1,8 @@
 use crate::{
     ray::Ray,
-    vector3::{MatrixDot, Point3}, interval::Interval,
+    vectors::vector3::Point3,
+    vectors::ops::MatrixDot,
+    interval::Interval,
 };
 use crate::objects::hittable::{HitRecord, Raycaster};
 
