@@ -7,6 +7,10 @@ pub struct Vector3<T: Number = f32> {
     pub z: T,
 }
 
+fn random_range(min: f32, max: f32) -> f32 {
+    min + (max - min) * rnd::<f32>()
+}
+
 pub type Point3 = Vector3;
 
 impl<T: Number> Vector3<T> {
@@ -41,6 +45,14 @@ impl<T: Number> Vector3<T> {
     }
     pub fn random_unit_vector() -> Vector3 {
         Self::random_range(-1.0, 1.0).to_unit()
+    }
+    pub fn random_in_unit_disk() -> Vector3 {
+        loop {
+            let p = Vector3::from((random_range(-1.0, 1.0), random_range(-1.0, 1.0), 0.0));
+            if p.norm_squared() < 1.0 {
+                break p;
+            }
+        }
     }
 }
 

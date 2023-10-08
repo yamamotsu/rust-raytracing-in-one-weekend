@@ -60,7 +60,7 @@ fn main() {
     let camera_center = Point3::from((-2.0, 2.0, 1.0));
     let camera_lookat = Point3::from((0.0, 0.0, -1.0));
     let camera_up = Vector3::from((0.0, 1.0, 0.0));
-    let camera_fov = 30.0;
+    let camera_fov = 20.0;
     let camera = Camera::from(CameraParams {
         aspect_ratio: ASPECT_RATIO,
         image_width: IMAGE_WIDTH,
@@ -70,6 +70,8 @@ fn main() {
         center: camera_center,
         lookat: camera_lookat,
         up: camera_up,
+        focus_dist: 3.4,
+        defocus_angle: 10.0,
     });
     camera.render(&hittables);
 }
