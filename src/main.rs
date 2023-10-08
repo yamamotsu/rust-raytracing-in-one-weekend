@@ -1,19 +1,19 @@
-mod vectors;
-mod color;
-mod ray;
-mod objects;
-mod interval;
 mod camera;
+mod color;
+mod interval;
 mod materials;
+mod objects;
+mod ray;
+mod vectors;
 
-use std::io::Write;
 use color::Color;
 use env_logger;
-use materials::material::Material;
 use materials::lambertian::Lambertian;
-use vectors::vector3::{Point3, Vector3};
-use objects::sphere::Sphere;
+use materials::material::Material;
 use objects::hittable::{Hittables, Raycaster};
+use objects::sphere::Sphere;
+use std::io::Write;
+use vectors::vector3::{Point3, Vector3};
 
 use crate::camera::{Camera, CameraParams};
 
@@ -27,12 +27,12 @@ fn main() {
     // render
     env_logger::builder()
         .filter_level(log::LevelFilter::Debug)
-        .format(|buf, record| {
-            write!(buf, "{}", record.args())
-        })
+        .format(|buf, record| write!(buf, "{}", record.args()))
         .init();
 
-    let lambertian = Lambertian { albedo: Color::from((0.5, 0.5, 0.5)) };
+    let lambertian = Lambertian {
+        albedo: Color::from((0.5, 0.5, 0.5)),
+    };
     let sphere = Sphere::from((0.5, Point3::from((0.0, 0.0, -1.0)), &lambertian));
     let ground = Sphere::from((100.0, Point3::from((0.0, -100.5, -1.0)), &lambertian));
     let objects: Vec<&dyn Raycaster> = vec![&sphere, &ground];

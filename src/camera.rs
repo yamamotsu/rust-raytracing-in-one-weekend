@@ -2,13 +2,11 @@ use log::debug;
 use rand::random;
 
 use crate::{
-    vectors::{
-        vector3::{Point3, Vector3},
-        utils,
-    },
-    objects::hittable::{Hittables, Raycaster, HitRecord},
-    ray::Ray, interval::Interval,
-    color::{Color, write_color},
+    color::{write_color, Color},
+    interval::Interval,
+    objects::hittable::{Hittables, Raycaster},
+    ray::Ray,
+    vectors::vector3::{Point3, Vector3},
 };
 
 const VIEWPORT_HEIGHT: f32 = 2.0;
@@ -49,7 +47,8 @@ impl Camera {
     }
 
     fn get_ray(&self, x: u32, y: u32) -> Ray {
-        let pixel_center = self.pixel00_loc + (self.pixel_delta_u * x as f32) + (self.pixel_delta_v * y as f32);
+        let pixel_center =
+            self.pixel00_loc + (self.pixel_delta_u * x as f32) + (self.pixel_delta_v * y as f32);
         let pixel_sample = pixel_center + self.pixel_sample_square();
         let ray_direction = (pixel_sample - self.center).to_unit();
         Ray::from((self.center, ray_direction))
@@ -81,8 +80,8 @@ impl Camera {
             Some(result) => {
                 let (attenuation, ray_scattered) = result.material.scatter(ray, &result);
                 self.ray_color(&ray_scattered, world, depth - 1) * attenuation
-            },
-            None => self.ray_color_background(&ray)
+            }
+            None => self.ray_color_background(&ray),
         }
     }
 }
@@ -118,7 +117,7 @@ impl From<CameraParams> for Camera {
 
         // Calc. the location of the upper left pixel.
         let focal_vec = Vector3::from((0.0, 0.0, focal_length));
-        let viewport_upper_left = center - focal_vec - viewport_u/2.0 - viewport_v/2.0;
+        let viewport_upper_left = center - focal_vec - viewport_u / 2.0 - viewport_v / 2.0;
         let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5;
 
         Camera {

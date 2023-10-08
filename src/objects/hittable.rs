@@ -1,4 +1,4 @@
-use crate::{ Point3, Vector3, ray::Ray, interval::Interval, materials::material::Material };
+use crate::{interval::Interval, materials::material::Material, ray::Ray, Point3, Vector3};
 
 pub struct HitRecord<'t> {
     pub point: Point3,
@@ -8,17 +8,27 @@ pub struct HitRecord<'t> {
     pub material: &'t dyn Material,
 }
 pub trait Raycaster {
-    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord::<'_>>;
+    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord<'_>>;
 }
 
 pub struct Hittables<'t> {
-    pub objects: Vec<&'t dyn Raycaster>
+    pub objects: Vec<&'t dyn Raycaster>,
 }
 
-impl<'t> Raycaster for Hittables::<'t> {
-    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord::<'t>> {
-        let hit_records = self.objects.clone().into_iter().filter_map(|obj| obj.hit(ray, interval));
-        hit_records.reduce(|accumulator, hit| if hit.t < accumulator.t { hit } else { accumulator })
+impl<'t> Raycaster for Hittables<'t> {
+    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord<'t>> {
+        let hit_records = self
+            .objects
+            .clone()
+            .into_iter()
+            .filter_map(|obj| obj.hit(ray, interval));
+        hit_records.reduce(|accumulator, hit| {
+            if hit.t < accumulator.t {
+                hit
+            } else {
+                accumulator
+            }
+        })
     }
 }
 

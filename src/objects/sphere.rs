@@ -1,11 +1,6 @@
 use crate::materials::material::Material;
-use crate::{
-    ray::Ray,
-    vectors::vector3::Point3,
-    vectors::ops::MatrixDot,
-    interval::Interval,
-};
 use crate::objects::hittable::{HitRecord, Raycaster};
+use crate::{interval::Interval, ray::Ray, vectors::ops::MatrixDot, vectors::vector3::Point3};
 
 pub struct Sphere<'t, Mat: Material> {
     pub r: f32,
@@ -21,7 +16,7 @@ pub struct Sphere<'t, Mat: Material> {
 //     }
 // }
 
-impl<'t, Mat: Material> From<(f32, Point3, &'t Mat)> for Sphere::<'t, Mat> {
+impl<'t, Mat: Material> From<(f32, Point3, &'t Mat)> for Sphere<'t, Mat> {
     fn from(value: (f32, Point3, &'t Mat)) -> Self {
         Sphere::<'t, Mat> {
             r: value.0,
@@ -31,8 +26,8 @@ impl<'t, Mat: Material> From<(f32, Point3, &'t Mat)> for Sphere::<'t, Mat> {
     }
 }
 
-impl<Mat: Material> Raycaster for Sphere::<'_, Mat> {
-    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord::<'_>> {
+impl<Mat: Material> Raycaster for Sphere<'_, Mat> {
+    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord<'_>> {
         let direction = &ray.direction;
         let origin_to_sphere = ray.origin - self.center;
         let a = direction.norm_squared();
@@ -58,11 +53,21 @@ impl<Mat: Material> Raycaster for Sphere::<'_, Mat> {
 
         let point = ray.at(root);
         let mut norm = (point - self.center).to_unit();
-        let front_face = if direction.dot(&norm) < 0.0 { true } else { false };
+        let front_face = if direction.dot(&norm) < 0.0 {
+            true
+        } else {
+            false
+        };
         if front_face == false {
             // ensure that norm is always against ray
             norm *= -1.0;
         }
-        Some(HitRecord::<'_> { point, norm, t: root, front_face, material: self.material })
+        Some(HitRecord::<'_> {
+            point,
+            norm,
+            t: root,
+            front_face,
+            material: self.material,
+        })
     }
 }

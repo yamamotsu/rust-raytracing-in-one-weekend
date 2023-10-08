@@ -1,4 +1,9 @@
-use crate::{color::Color, objects::hittable::{Raycaster, HitRecord}, ray::Ray, vectors::{vector3::Vector3, utils::near_zero}};
+use crate::{
+    color::Color,
+    objects::hittable::HitRecord,
+    ray::Ray,
+    vectors::{utils::near_zero, vector3::Vector3},
+};
 
 use super::material::Material;
 
@@ -11,10 +16,17 @@ pub struct Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, _: &Ray, hit_record: &HitRecord::<'_>) -> (Color, Ray) {
+    fn scatter(&self, _: &Ray, hit_record: &HitRecord<'_>) -> (Color, Ray) {
         let _scatter_direction = Vector3::<f32>::random_unit_vector() + hit_record.norm;
-        let scatter_direction = if near_zero(&_scatter_direction) { hit_record.norm } else { _scatter_direction };
-        let scattered = Ray { origin: hit_record.point, direction: scatter_direction };
+        let scatter_direction = if near_zero(&_scatter_direction) {
+            hit_record.norm
+        } else {
+            _scatter_direction
+        };
+        let scattered = Ray {
+            origin: hit_record.point,
+            direction: scatter_direction,
+        };
         let attenuation = self.albedo;
         (attenuation, scattered)
     }

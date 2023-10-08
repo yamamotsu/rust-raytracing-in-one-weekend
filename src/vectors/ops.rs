@@ -1,6 +1,6 @@
-use std::ops;
-use num_traits::Float as Number;
 use crate::vectors::vector3::*;
+use num_traits::Float as Number;
+use std::ops;
 
 // Vector + Vector
 impl<T: Number> ops::Add<Vector3<T>> for Vector3<T> {
@@ -25,13 +25,13 @@ impl<T: Number> ops::Add<T> for Vector3<T> {
         }
     }
 }
-impl<T: Number> ops::AddAssign<Vector3::<T>> for Vector3::<T> {
-    fn add_assign(&mut self, rhs: Vector3::<T>) {
+impl<T: Number> ops::AddAssign<Vector3<T>> for Vector3<T> {
+    fn add_assign(&mut self, rhs: Vector3<T>) {
         let computed = *self + rhs;
         self.clone_from(&computed);
     }
 }
-impl<T: Number> ops::AddAssign<T> for Vector3::<T> {
+impl<T: Number> ops::AddAssign<T> for Vector3<T> {
     fn add_assign(&mut self, rhs: T) {
         let computed = *self + rhs;
         self.clone_from(&computed);
@@ -60,13 +60,13 @@ impl<T: Number> ops::Sub<T> for Vector3<T> {
         }
     }
 }
-impl<T: Number> ops::SubAssign<Vector3::<T>> for Vector3::<T> {
-    fn sub_assign(&mut self, rhs: Vector3::<T>) {
+impl<T: Number> ops::SubAssign<Vector3<T>> for Vector3<T> {
+    fn sub_assign(&mut self, rhs: Vector3<T>) {
         let computed = *self - rhs;
         self.clone_from(&computed);
     }
 }
-impl<T: Number> ops::SubAssign<T> for Vector3::<T> {
+impl<T: Number> ops::SubAssign<T> for Vector3<T> {
     fn sub_assign(&mut self, rhs: T) {
         let computed = *self - rhs;
         self.clone_from(&computed);
@@ -95,13 +95,13 @@ impl<T: Number> ops::Mul<T> for Vector3<T> {
         }
     }
 }
-impl<T: Number> ops::MulAssign<Vector3::<T>> for Vector3::<T> {
-    fn mul_assign(&mut self, rhs: Vector3::<T>) {
+impl<T: Number> ops::MulAssign<Vector3<T>> for Vector3<T> {
+    fn mul_assign(&mut self, rhs: Vector3<T>) {
         let computed = *self * rhs;
         self.clone_from(&computed);
     }
 }
-impl<T: Number> ops::MulAssign<T> for Vector3::<T> {
+impl<T: Number> ops::MulAssign<T> for Vector3<T> {
     fn mul_assign(&mut self, rhs: T) {
         let computed = *self * rhs;
         self.clone_from(&computed);
@@ -130,13 +130,13 @@ impl<T: Number> ops::Div<T> for Vector3<T> {
         }
     }
 }
-impl<T: Number> ops::DivAssign<Vector3::<T>> for Vector3::<T> {
-    fn div_assign(&mut self, rhs: Vector3::<T>) {
+impl<T: Number> ops::DivAssign<Vector3<T>> for Vector3<T> {
+    fn div_assign(&mut self, rhs: Vector3<T>) {
         let computed = *self / rhs;
         self.clone_from(&computed);
     }
 }
-impl<T: Number> ops::DivAssign<T> for Vector3::<T> {
+impl<T: Number> ops::DivAssign<T> for Vector3<T> {
     fn div_assign(&mut self, rhs: T) {
         let computed = *self / rhs;
         self.clone_from(&computed);
@@ -182,8 +182,8 @@ impl<T: Number> ops::Neg for Vector3<T> {
 pub trait MatrixDot<Rhs, Output> {
     fn dot(&self, rhs: &Rhs) -> Output;
 }
-impl<T: Number> MatrixDot<Vector3::<T>, T> for Vector3::<T> {
-    fn dot(&self, rhs: &Vector3::<T>) -> T {
+impl<T: Number> MatrixDot<Vector3<T>, T> for Vector3<T> {
+    fn dot(&self, rhs: &Vector3<T>) -> T {
         self.x * rhs.x + self.y * rhs.y + self.z * rhs.z
     }
 }
@@ -192,8 +192,8 @@ impl<T: Number> MatrixDot<Vector3::<T>, T> for Vector3::<T> {
 pub trait MatrixCross<Rhs = Self, Output = Self> {
     fn cross(&self, rhs: &Rhs) -> Output;
 }
-impl<T: Number> MatrixCross for Vector3::<T> {
-    fn cross(&self, rhs: &Vector3::<T>) -> Vector3::<T> {
+impl<T: Number> MatrixCross for Vector3<T> {
+    fn cross(&self, rhs: &Vector3<T>) -> Vector3<T> {
         Vector3::<T> {
             x: self.y * rhs.z - self.z * rhs.y,
             y: self.z * rhs.x - self.x * rhs.z,

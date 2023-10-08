@@ -22,14 +22,20 @@ impl Interval {
     }
 
     pub fn empty() -> Self {
-        Interval { min: f32::INFINITY, max: f32::NEG_INFINITY }
+        Interval {
+            min: f32::INFINITY,
+            max: f32::NEG_INFINITY,
+        }
     }
     pub fn universe() -> Self {
-        Interval { min: f32::NEG_INFINITY, max: f32::INFINITY }
+        Interval {
+            min: f32::NEG_INFINITY,
+            max: f32::INFINITY,
+        }
     }
 }
 
-impl Copy for Interval{}
+impl Copy for Interval {}
 impl Clone for Interval {
     fn clone(&self) -> Self {
         Interval {
@@ -45,6 +51,9 @@ impl Clone for Interval {
 
 impl From<(f32, f32)> for Interval {
     fn from(value: (f32, f32)) -> Self {
-        Interval { min: value.0, max: value.1 }
+        Interval {
+            min: value.0,
+            max: value.1,
+        }
     }
 }

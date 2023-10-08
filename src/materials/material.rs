@@ -1,5 +1,5 @@
-use crate::{ray::Ray, color::Color, Raycaster, objects::hittable::HitRecord};
+use crate::{color::Color, objects::hittable::HitRecord, ray::Ray};
 
 pub trait Material {
-    fn scatter(&self, ray: &Ray, hit_record: &HitRecord::<'_>) -> (Color, Ray);
+    fn scatter(&self, ray: &Ray, hit_record: &HitRecord<'_>) -> (Color, Ray);
 }
