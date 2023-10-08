@@ -1,6 +1,6 @@
 # Ray Tracing in One Weekend in Rust
 
-Rust practice project.
+Personal project for my first Rust practice.
 Simple ray-tracer script, used / migrated the algorithms / C++ codes written in [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 
 Final output
