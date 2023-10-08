@@ -16,3 +16,9 @@ pub fn random_on_hemisphere(norm: &Vector3<f32>) -> Vector3<f32> {
 pub fn near_zero(vec: &Vector3<f32>) -> bool {
     (vec.x.abs() < EPSILON) && (vec.y.abs() < EPSILON) && (vec.z.abs() < EPSILON)
 }
+
+/// Return new vector reflected by the surface with grant normal vector
+pub fn reflect(vec: &Vector3<f32>, norm: &Vector3<f32>) -> Vector3<f32> {
+    let _v = *norm * vec.dot(norm) * 2.0;
+    *vec - _v
+}

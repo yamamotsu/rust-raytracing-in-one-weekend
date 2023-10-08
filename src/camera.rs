@@ -77,10 +77,12 @@ impl Camera {
         }
 
         match world.hit(&ray, Interval::from((0.001, f32::INFINITY))) {
-            Some(result) => {
-                let (attenuation, ray_scattered) = result.material.scatter(ray, &result);
-                self.ray_color(&ray_scattered, world, depth - 1) * attenuation
-            }
+            Some(result) => match result.material.scatter(ray, &result) {
+                Some(scattered) => {
+                    self.ray_color(&scattered.ray, world, depth - 1) * scattered.attenuation
+                }
+                None => Color::from((0.0, 0.0, 0.0)),
+            },
             None => self.ray_color_background(&ray),
         }
     }
