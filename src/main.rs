@@ -1,5 +1,6 @@
 mod camera;
 mod color;
+mod coordinate;
 mod interval;
 mod materials;
 mod objects;
@@ -18,10 +19,9 @@ use vectors::vector3::{Point3, Vector3};
 
 use crate::camera::{Camera, CameraParams};
 
-const ASPECT_RATIO: f32 = 16.0 / 9.0;
-const IMAGE_WIDTH: u32 = 256;
-const FOCAL_LENGTH: f32 = 1.0;
-const SAMPLES_PER_PIXEL: u32 = 100;
+const ASPECT_RATIO: f32 = 1.0; // 16.0 / 9.0;
+const IMAGE_WIDTH: u32 = 480;
+const SAMPLES_PER_PIXEL: u32 = 150;
 const MAX_DEPTH: i32 = 50;
 
 fn main() {
@@ -57,12 +57,19 @@ fn main() {
     ];
     let hittables = Hittables::from(objects);
 
+    let camera_center = Point3::from((-2.0, 2.0, 1.0));
+    let camera_lookat = Point3::from((0.0, 0.0, -1.0));
+    let camera_up = Vector3::from((0.0, 1.0, 0.0));
+    let camera_fov = 30.0;
     let camera = Camera::from(CameraParams {
         aspect_ratio: ASPECT_RATIO,
         image_width: IMAGE_WIDTH,
-        focal_length: FOCAL_LENGTH,
         samples_per_pixel: SAMPLES_PER_PIXEL,
         max_depth: MAX_DEPTH,
+        vfov_deg: camera_fov,
+        center: camera_center,
+        lookat: camera_lookat,
+        up: camera_up,
     });
     camera.render(&hittables);
 }

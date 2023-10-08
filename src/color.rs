@@ -1,12 +1,20 @@
+use crate::{interval::Interval, vectors::vector3::Vector3};
 use std::fmt;
-use crate::{vectors::vector3::Vector3, interval::Interval};
 
 pub type Color = Vector3;
 
 pub fn write_color(output: &mut dyn std::fmt::Write, color: &Color) -> () {
     let intensity: Interval = Interval::from((0.0, 0.999));
-    let rgb = Color::from((intensity.clamp(color.x), intensity.clamp(color.y), intensity.clamp(color.z))) * 256.0;
-    fmt::write(output, format_args!("{:.0} {:.0} {:.0}\n", rgb.x, rgb.y, rgb.z)).unwrap()
+    let rgb = Color::from((
+        intensity.clamp(color.x),
+        intensity.clamp(color.y),
+        intensity.clamp(color.z),
+    )) * 256.0;
+    fmt::write(
+        output,
+        format_args!("{:.0} {:.0} {:.0}\n", rgb.x, rgb.y, rgb.z),
+    )
+    .unwrap()
 }
 
 #[cfg(test)]

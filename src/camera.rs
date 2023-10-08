@@ -3,22 +3,26 @@ use rand::random;
 
 use crate::{
     color::{write_color, Color},
+    coordinate::Coordinate,
     interval::Interval,
     objects::hittable::{Hittables, Raycaster},
     ray::Ray,
-    vectors::vector3::{Point3, Vector3},
+    vectors::{
+        ops::MatrixCross,
+        vector3::{Point3, Vector3},
+    },
 };
-
-const VIEWPORT_HEIGHT: f32 = 2.0;
 
 pub struct Camera {
     aspect_ratio: f32,
     image_width: u32,
+    image_height: u32,
     focal_length: f32,
     samples_per_pixel: u32,
     max_depth: i32,
+    vfov_deg: f32,
+    coordinate: Coordinate,
 
-    image_height: u32,
     center: Point3,
     pixel00_loc: Point3,
     pixel_delta_u: Vector3,
@@ -91,35 +95,52 @@ impl Camera {
 pub struct CameraParams {
     pub aspect_ratio: f32,
     pub image_width: u32,
-    pub focal_length: f32,
     pub samples_per_pixel: u32,
     pub max_depth: i32,
+    pub vfov_deg: f32,
+    pub center: Point3,
+    pub lookat: Point3,
+    pub up: Vector3,
 }
 
 impl From<CameraParams> for Camera {
     fn from(value: CameraParams) -> Self {
         let aspect_ratio = value.aspect_ratio;
         let image_width = value.image_width;
-        let focal_length = value.focal_length;
         let samples_per_pixel = value.samples_per_pixel;
         let max_depth = value.max_depth;
+        let vfov_deg = value.vfov_deg;
+        let center = value.center;
+        let lookat = value.lookat;
+        let up = value.up;
 
         let _image_height = (image_width as f32 / aspect_ratio) as u32;
         let image_height = if _image_height >= 1 { _image_height } else { 1 };
-        let center = Point3::from((0.0, 0.0, 0.0));
 
-        let viewport_height: f32 = VIEWPORT_HEIGHT;
+        // Determine viewport dimensions.
+        let focal_length = (center - lookat).norm();
+        let h = (vfov_deg.to_radians() / 2.0).tan();
+        let viewport_height: f32 = 2.0 * h * focal_length;
         let viewport_width = viewport_height * (image_width as f32 / image_height as f32);
 
-        let viewport_u = Vector3::from((viewport_width, 0.0, 0.0));
-        let viewport_v = Vector3::from((0.0, -viewport_height, 0.0));
+        let coord_w = (center - lookat).to_unit();
+        let coord_u = up.cross(&coord_w).to_unit();
+        let coord_v = coord_w.cross(&coord_u);
+        let coordinate = Coordinate {
+            u: coord_u,
+            v: coord_v,
+            w: coord_w,
+        };
+
+        let viewport_u = coord_u * viewport_width;
+        let viewport_v = -coord_v * viewport_height;
 
         let pixel_delta_u = viewport_u / image_width as f32;
         let pixel_delta_v = viewport_v / image_height as f32;
 
         // Calc. the location of the upper left pixel.
-        let focal_vec = Vector3::from((0.0, 0.0, focal_length));
-        let viewport_upper_left = center - focal_vec - viewport_u / 2.0 - viewport_v / 2.0;
+        let viewport_upper_left =
+            center - coord_w * focal_length - viewport_u / 2.0 - viewport_v / 2.0;
         let pixel00_loc = viewport_upper_left + (pixel_delta_u + pixel_delta_v) * 0.5;
 
         Camera {
@@ -133,6 +154,8 @@ impl From<CameraParams> for Camera {
             pixel_delta_v,
             samples_per_pixel,
             max_depth,
+            vfov_deg,
+            coordinate,
         }
     }
 }
