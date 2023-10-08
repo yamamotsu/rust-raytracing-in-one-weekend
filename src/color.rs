@@ -5,11 +5,13 @@ pub type Color = Vector3;
 
 pub fn write_color(output: &mut dyn std::fmt::Write, color: &Color) -> () {
     let intensity: Interval = Interval::from((0.0, 0.999));
+    let _color_gamma = color.sqrt();
     let rgb = Color::from((
-        intensity.clamp(color.x),
-        intensity.clamp(color.y),
-        intensity.clamp(color.z),
+        intensity.clamp(_color_gamma.x),
+        intensity.clamp(_color_gamma.y),
+        intensity.clamp(_color_gamma.z),
     )) * 256.0;
+
     fmt::write(
         output,
         format_args!("{:.0} {:.0} {:.0}\n", rgb.x, rgb.y, rgb.z),

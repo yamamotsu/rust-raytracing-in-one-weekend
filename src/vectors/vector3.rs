@@ -17,12 +17,24 @@ impl<T: Number> Vector3<T> {
         self.x.powi(2) + self.y.powi(2) + self.z.powi(2)
     }
 
-    pub fn to_unit(self) -> Vector3::<T> {
+    pub fn sqrt(self) -> Vector3<T> {
+        Vector3::<T> {
+            x: self.x.sqrt(),
+            y: self.y.sqrt(),
+            z: self.z.sqrt(),
+        }
+    }
+
+    pub fn to_unit(self) -> Vector3<T> {
         self / self.norm()
     }
 
     pub fn random() -> Vector3 {
-        Vector3 { x: rnd(), y: rnd(), z: rnd() }
+        Vector3 {
+            x: rnd(),
+            y: rnd(),
+            z: rnd(),
+        }
     }
     pub fn random_range(min: f32, max: f32) -> Vector3 {
         Self::random() * (max - min) + min
@@ -32,8 +44,8 @@ impl<T: Number> Vector3<T> {
     }
 }
 
-impl<T: Number> Copy for Vector3::<T> {}
-impl<T: Number> Clone for Vector3::<T> {
+impl<T: Number> Copy for Vector3<T> {}
+impl<T: Number> Clone for Vector3<T> {
     fn clone(&self) -> Self {
         Vector3::<T>::from((self.x, self.y, self.z))
     }
@@ -45,7 +57,7 @@ impl<T: Number> Clone for Vector3::<T> {
 }
 
 // Factory
-impl<T: Number> From<(T, T, T)> for Vector3::<T> {
+impl<T: Number> From<(T, T, T)> for Vector3<T> {
     fn from(value: (T, T, T)) -> Self {
         Vector3 {
             x: value.0,
@@ -89,7 +101,7 @@ mod tests {
             z: 4.0,
         };
 
-        let expected = Vector3::from((0.0, -3.0/5.0, 4.0/5.0));
+        let expected = Vector3::from((0.0, -3.0 / 5.0, 4.0 / 5.0));
         let actual = vec1.to_unit();
         assert_eq!(actual.x, expected.x);
         assert_eq!(actual.y, expected.y);
