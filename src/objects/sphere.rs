@@ -52,7 +52,7 @@ impl<Mat: Material> Raycaster for Sphere<'_, Mat> {
         };
 
         let point = ray.at(root);
-        let mut norm = (point - self.center).to_unit();
+        let mut norm = (point - self.center) / self.r;
         let front_face = if direction.dot(&norm) < 0.0 {
             true
         } else {
