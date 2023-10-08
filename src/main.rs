@@ -4,9 +4,13 @@ mod ray;
 mod objects;
 mod interval;
 mod camera;
+mod materials;
 
 use std::io::Write;
+use color::Color;
 use env_logger;
+use materials::material::Material;
+use materials::lambertian::Lambertian;
 use vectors::vector3::{Point3, Vector3};
 use objects::sphere::Sphere;
 use objects::hittable::{Hittables, Raycaster};
@@ -28,8 +32,9 @@ fn main() {
         })
         .init();
 
-    let sphere = Sphere::from((0.5, Point3::from((0.0, 0.0, -1.0))));
-    let ground = Sphere::from((100.0, Point3::from((0.0, -100.5, -1.0))));
+    let lambertian = Lambertian { albedo: Color::from((0.5, 0.5, 0.5)) };
+    let sphere = Sphere::from((0.5, Point3::from((0.0, 0.0, -1.0)), &lambertian));
+    let ground = Sphere::from((100.0, Point3::from((0.0, -100.5, -1.0)), &lambertian));
     let objects: Vec<&dyn Raycaster> = vec![&sphere, &ground];
     let hittables = Hittables::from(objects);
 

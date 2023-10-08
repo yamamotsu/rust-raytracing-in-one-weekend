@@ -79,9 +79,8 @@ impl Camera {
 
         match world.hit(&ray, Interval::from((0.001, f32::INFINITY))) {
             Some(result) => {
-                let direction = Vector3::<f32>::random_unit_vector() + result.norm;
-                let ray_reflected = Ray::from((result.point, direction));
-                self.ray_color(&ray_reflected, world, depth - 1) * 0.7
+                let (attenuation, ray_scattered) = result.material.scatter(ray, &result);
+                self.ray_color(&ray_scattered, world, depth - 1) * attenuation
             },
             None => self.ray_color_background(&ray)
         }
