@@ -27,10 +27,11 @@ use world::World;
 
 use once_cell::sync::Lazy;
 
-const ASPECT_RATIO: f32 = 16.0 / 9.0;
-const IMAGE_WIDTH: u32 = 1024;
-const SAMPLES_PER_PIXEL: u32 = 128;
-const MAX_DEPTH: i32 = 20;
+const ASPECT_RATIO: f32 = 4.0 / 3.0;
+const IMAGE_WIDTH: u32 = 4096;
+const SAMPLES_PER_PIXEL: u32 = 512;
+const MAX_DEPTH: i32 = 50;
+const MAX_WORKERS: usize = 8;
 
 static WORLD: Lazy<World> = Lazy::new(|| initialize_world());
 
@@ -153,6 +154,7 @@ fn main() {
         },
         samples_per_pixel: SAMPLES_PER_PIXEL,
         max_depth: MAX_DEPTH,
+        max_workers: MAX_WORKERS,
     };
 
     let img = camera.render(&WORLD);

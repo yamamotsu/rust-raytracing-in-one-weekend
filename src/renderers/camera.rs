@@ -125,6 +125,7 @@ pub struct Camera {
     // render params
     pub samples_per_pixel: u32,
     pub max_depth: i32,
+    pub max_workers: usize,
 }
 
 impl Camera {
@@ -231,7 +232,7 @@ impl Camera {
 impl Renderer for Camera {
     fn render(&self, world: &'static World) -> RgbImage {
         let render_params = self.initialize();
-        let thread_pool = ThreadPool::new(16);
+        let thread_pool = ThreadPool::new(self.max_workers);
 
         let Rect {
             width: image_width,
