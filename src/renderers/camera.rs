@@ -3,11 +3,13 @@ use rand::random;
 
 use crate::{
     color::{write_color, Color},
-    coordinate::{Axes2D, Axes3D, CoordinateSystem},
+    geometry::{
+        axis::{Axes2D, Axes3D},
+        coordinate::CoordinateSystem,
+    },
     interval::Interval,
-    materials::material::Materials,
-    objects::{hittable::Hittable, hittables::Hittables},
-    ray::Ray,
+    objects::hittable::Hittable,
+    optical::ray::Ray,
     vectors::{
         ops::MatrixCross,
         vector3::{Point3, Vector3},
@@ -23,27 +25,19 @@ fn ray_color_background(r: &Ray) -> Color {
     Color::from((1.0, 1.0, 1.0)) * (1.0 - alpha) + Color::from((0.5, 0.7, 1.0)) * alpha
 }
 
-fn ray_color_object(direction: &Vector3) -> Color {
-    Color::from((direction.x + 1.0, direction.y + 1.0, direction.z + 1.0)) * 0.5
-}
-
-fn ray_color<I: Sized>(
-    ray: &Ray,
-    world: &Hittables<I>,
-    materials: &Materials,
-    depth: i32,
-) -> Color {
+fn ray_color(ray: &Ray, world: &World, depth: i32) -> Color {
     if depth <= 0 {
         return Color::from((0.0, 0.0, 0.0));
     }
 
-    match world.hit(&ray, Interval::from((0.001, f32::INFINITY))) {
+    let World { objects, materials } = world;
+    match objects.hit(&ray, Interval::from((0.001, f32::INFINITY))) {
         Some(result) => {
             let id = result.material_id.clone();
             let material = &materials.materials[&id].material;
             match material.scatter(ray, &result) {
                 Some(scattered) => {
-                    ray_color(&scattered.ray, world, materials, depth - 1) * scattered.attenuation
+                    ray_color(&scattered.ray, world, depth - 1) * scattered.attenuation
                 }
                 None => Color::from((0.0, 0.0, 0.0)),
             }
@@ -51,11 +45,12 @@ fn ray_color<I: Sized>(
         None => ray_color_background(&ray),
     }
 }
+
 /// Returns a random point in the square surrounding a pixel at the origin.
-fn pixel_sample_square(coord: CoordinateSystem) -> Vector3 {
+fn pixel_sample_square(axes: Axes3D) -> Vector3 {
     let px = -0.5 + random::<f32>();
     let py = -0.5 + random::<f32>();
-    (coord.axes.u * px) + (coord.axes.v * py)
+    (axes.u * px) + (axes.v * py)
 }
 fn defocus_disk_sample(center: Vector3, defocus_disk_axes: Axes2D) -> Point3 {
     let p = Vector3::<f32>::random_in_unit_disk();
@@ -217,7 +212,7 @@ impl Camera {
         let image_coord = rendering_params.image_coord;
         let pixel_center =
             image_coord.origin + (image_coord.axes.u * x as f32) + (image_coord.axes.v * y as f32);
-        let pixel_sample = pixel_center + pixel_sample_square(image_coord);
+        let pixel_sample = pixel_center + pixel_sample_square(image_coord.axes);
 
         let ray_origin = if self.optical_params.defocus_angle <= 0.0 {
             self.geometry.center
@@ -231,7 +226,6 @@ impl Camera {
 
 impl Renderer for Camera {
     fn render(&self, world: &World) {
-        let World { objects, materials } = world;
         let render_params = self.initialize();
 
         let Rect {
@@ -245,12 +239,7 @@ impl Renderer for Camera {
             for x in 0..image_width {
                 let mut color: Color = Color::from((0.0, 0.0, 0.0));
                 for _ in 0..self.samples_per_pixel {
-                    color += ray_color(
-                        &self.get_ray(x, y, render_params),
-                        objects,
-                        materials,
-                        self.max_depth,
-                    );
+                    color += ray_color(&self.get_ray(x, y, render_params), world, self.max_depth);
                 }
                 color /= self.samples_per_pixel as f32;
 

@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use uuid::Uuid;
 
-use crate::{interval::Interval, ray::Ray};
+use crate::{interval::Interval, optical::ray::Ray};
 
 use super::{
     container::ObjectContainer,

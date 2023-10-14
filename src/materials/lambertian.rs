@@ -1,7 +1,7 @@
 use crate::{
     color::Color,
     objects::hittable::HitRecord,
-    ray::Ray,
+    optical::ray::Ray,
     vectors::{utils::near_zero, vector3::Vector3},
 };
 

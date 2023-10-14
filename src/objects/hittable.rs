@@ -1,6 +1,6 @@
 use uuid::Uuid;
 
-use crate::{interval::Interval, ray::Ray, Point3, Vector3};
+use crate::{interval::Interval, optical::ray::Ray, Point3, Vector3};
 
 pub struct HitRecord {
     pub point: Point3,

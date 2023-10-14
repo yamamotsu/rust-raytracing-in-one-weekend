@@ -1,7 +1,6 @@
 use crate::{
     color::Color,
-    ray::Ray,
-    vectors::utils::{reflect, reflectance, refract, refract_or_reflect, refractable},
+    optical::{ray::Ray, scatter::refract_or_reflect},
 };
 
 use super::material::{Material, Scatter};
@@ -13,7 +12,7 @@ pub struct DiElectric {
 impl Material for DiElectric {
     fn scatter(
         &self,
-        ray: &crate::ray::Ray,
+        ray: &Ray,
         hit_record: &crate::objects::hittable::HitRecord,
     ) -> Option<super::material::Scatter> {
         let refraction_ratio = if hit_record.front_face {

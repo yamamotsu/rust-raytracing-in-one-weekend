@@ -1,7 +1,7 @@
 use crate::{
     color::Color,
-    ray::Ray,
-    vectors::{utils::reflect, vector3::Vector3},
+    optical::{ray::Ray, scatter::reflect},
+    vectors::vector3::Vector3,
 };
 
 use super::material::{Material, Scatter};
@@ -23,7 +23,7 @@ impl From<(Color, f32)> for Metal {
 impl Material for Metal {
     fn scatter(
         &self,
-        ray: &crate::ray::Ray,
+        ray: &Ray,
         hit_record: &crate::objects::hittable::HitRecord,
     ) -> Option<Scatter> {
         let reflected = reflect(&ray.direction.to_unit(), &hit_record.norm)

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::{color::Color, objects::hittable::HitRecord, ray::Ray};
+use crate::{color::Color, objects::hittable::HitRecord, optical::ray::Ray};
 
 use uuid::Uuid;
 

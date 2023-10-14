@@ -1,8 +1,9 @@
 use uuid::Uuid;
 
-use crate::materials::material::Material;
 use crate::objects::hittable::{HitRecord, Hittable};
-use crate::{interval::Interval, ray::Ray, vectors::ops::MatrixDot, vectors::vector3::Point3};
+use crate::optical::ray::Ray;
+use crate::vectors::ops::MatrixDot;
+use crate::{interval::Interval, vectors::vector3::Point3};
 
 pub struct Sphere {
     pub r: f32,

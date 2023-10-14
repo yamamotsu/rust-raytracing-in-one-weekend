@@ -1,9 +1,9 @@
 mod color;
-mod coordinate;
+mod geometry;
 mod interval;
 mod materials;
 mod objects;
-mod ray;
+mod optical;
 mod renderers;
 mod vectors;
 mod world;
