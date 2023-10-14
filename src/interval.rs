@@ -1,17 +1,21 @@
-pub struct Interval {
-    min: f32,
-    max: f32,
+use num_traits::{Float, Num, PrimInt};
+
+trait Cmp: PartialOrd + Copy {}
+
+pub struct Interval<T: PartialOrd + Copy> {
+    pub min: T,
+    pub max: T,
 }
 
-impl Interval {
-    pub fn contains(&self, x: f32) -> bool {
+impl<T: PartialOrd + Copy> Interval<T> {
+    pub fn contains(&self, x: T) -> bool {
         self.min <= x && x <= self.max
     }
-    pub fn surrounds(&self, x: f32) -> bool {
+    pub fn surrounds(&self, x: T) -> bool {
         self.min < x && x < self.max
     }
 
-    pub fn clamp(&self, value: f32) -> f32 {
+    pub fn clamp(&self, value: T) -> T {
         if value < self.min {
             return self.min;
         }
@@ -20,23 +24,25 @@ impl Interval {
         }
         value
     }
+}
 
+impl<T: Float + PartialOrd> Interval<T> {
     pub fn empty() -> Self {
         Interval {
-            min: f32::INFINITY,
-            max: f32::NEG_INFINITY,
+            min: T::infinity(),
+            max: T::neg_infinity(),
         }
     }
     pub fn universe() -> Self {
         Interval {
-            min: f32::NEG_INFINITY,
-            max: f32::INFINITY,
+            min: T::neg_infinity(),
+            max: T::infinity(),
         }
     }
 }
 
-impl Copy for Interval {}
-impl Clone for Interval {
+impl<T: PartialOrd + Copy> Copy for Interval<T> {}
+impl<T: PartialOrd + Copy> Clone for Interval<T> {
     fn clone(&self) -> Self {
         Interval {
             min: self.min,
@@ -49,8 +55,8 @@ impl Clone for Interval {
     }
 }
 
-impl From<(f32, f32)> for Interval {
-    fn from(value: (f32, f32)) -> Self {
+impl<T: PartialOrd + Copy> From<(T, T)> for Interval<T> {
+    fn from(value: (T, T)) -> Self {
         Interval {
             min: value.0,
             max: value.1,

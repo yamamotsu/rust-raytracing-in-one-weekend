@@ -12,7 +12,7 @@ pub struct Sphere {
 }
 
 impl Hittable for Sphere {
-    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, interval: Interval<f32>) -> Option<HitRecord> {
         let direction = &ray.direction;
         let origin_to_sphere = ray.origin - self.center;
         let a = direction.norm_squared();

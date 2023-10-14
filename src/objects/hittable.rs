@@ -11,5 +11,5 @@ pub struct HitRecord {
 }
 
 pub trait Hittable: Sync {
-    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord>;
+    fn hit(&self, ray: &Ray, interval: Interval<f32>) -> Option<HitRecord>;
 }

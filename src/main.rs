@@ -29,8 +29,8 @@ use once_cell::sync::Lazy;
 
 const ASPECT_RATIO: f32 = 16.0 / 9.0;
 const IMAGE_WIDTH: u32 = 1024;
-const SAMPLES_PER_PIXEL: u32 = 256;
-const MAX_DEPTH: i32 = 50;
+const SAMPLES_PER_PIXEL: u32 = 128;
+const MAX_DEPTH: i32 = 20;
 
 static WORLD: Lazy<World> = Lazy::new(|| initialize_world());
 
@@ -132,7 +132,7 @@ fn main() {
         .format(|buf, record| write!(buf, "{}", record.args()))
         .init();
 
-    let camera_center = Point3::from((13.0, 2.0, 3.0));
+    let camera_center = Point3::from((13.0, 2.0, 5.0));
     let camera_lookat = Point3::from((0.0, 0.0, 0.0));
     let camera_up = Vector3::from((0.0, 1.0, 0.0));
     let camera_fov = 20.0;

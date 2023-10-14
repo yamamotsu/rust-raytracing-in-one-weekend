@@ -240,7 +240,6 @@ impl Renderer for Camera {
 
         let mut image = RgbImage::new(image_width, image_height);
 
-        print!("P3\n{} {}\n255\n", image_width, image_height);
         for y in 0..image_height {
             debug!("\rScanlines remaining: {}   ", image_height - y);
             for x in 0..image_width {
@@ -263,9 +262,6 @@ impl Renderer for Camera {
                 color /= self.samples_per_pixel as f32;
 
                 image.put_pixel(x, y, get_rgb(&color));
-                // let mut string = &mut String::new();
-                // write_color(&mut string, &color);
-                // print!("{}", string);
             }
         }
         debug!("\rDone.                 \n");
