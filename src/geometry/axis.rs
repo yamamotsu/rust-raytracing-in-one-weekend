@@ -1,4 +1,4 @@
-use crate::vectors::vector3::{Point3, Vector3};
+use crate::vectors::vector3::Vector3;
 
 pub struct Axes3D {
     pub u: Vector3,

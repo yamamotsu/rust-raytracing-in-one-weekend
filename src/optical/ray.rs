@@ -6,13 +6,6 @@ pub struct Ray {
 }
 
 impl Ray {
-    pub fn new() -> Self {
-        Ray {
-            origin: Point3::from((0.0, 0.0, 0.0)),
-            direction: Vector3::from((1.0, 0.0, 0.0)),
-        }
-    }
-
     pub fn at(self, t: f32) -> Vector3 {
         self.origin + self.direction * t
     }
