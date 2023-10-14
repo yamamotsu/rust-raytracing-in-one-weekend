@@ -25,18 +25,16 @@ use uuid::Uuid;
 use vectors::vector3::{Point3, Vector3};
 use world::World;
 
-const ASPECT_RATIO: f32 = 4.0 / 3.0; // 16.0 / 9.0;
-const IMAGE_WIDTH: u32 = 256;
-const SAMPLES_PER_PIXEL: u32 = 100;
+use once_cell::sync::Lazy;
+
+const ASPECT_RATIO: f32 = 16.0 / 9.0;
+const IMAGE_WIDTH: u32 = 1024;
+const SAMPLES_PER_PIXEL: u32 = 256;
 const MAX_DEPTH: i32 = 50;
 
-fn main() {
-    // render
-    env_logger::builder()
-        .filter_level(log::LevelFilter::Debug)
-        .format(|buf, record| write!(buf, "{}", record.args()))
-        .init();
+static WORLD: Lazy<World> = Lazy::new(|| initialize_world());
 
+fn initialize_world() -> World {
     let mut materials: Materials = Materials::new();
     let mut objects: Hittables<Uuid> = Hittables::new();
 
@@ -124,6 +122,16 @@ fn main() {
         }
     }
 
+    World { objects, materials }
+}
+
+fn main() {
+    // render
+    env_logger::builder()
+        .filter_level(log::LevelFilter::Debug)
+        .format(|buf, record| write!(buf, "{}", record.args()))
+        .init();
+
     let camera_center = Point3::from((13.0, 2.0, 3.0));
     let camera_lookat = Point3::from((0.0, 0.0, 0.0));
     let camera_up = Vector3::from((0.0, 1.0, 0.0));
@@ -146,6 +154,6 @@ fn main() {
         samples_per_pixel: SAMPLES_PER_PIXEL,
         max_depth: MAX_DEPTH,
     };
-    let world = World { objects, materials };
-    camera.render(&world);
+
+    camera.render(&WORLD);
 }

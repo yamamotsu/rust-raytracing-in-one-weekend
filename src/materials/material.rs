@@ -14,11 +14,12 @@ pub trait Material {
 }
 
 pub struct MaterialContainer {
-    pub material: Box<dyn Material>,
+    pub material: Box<dyn Material + Send>,
     pub id: Uuid,
 }
+unsafe impl Sync for MaterialContainer {}
 
-impl<T: Material + 'static> From<T> for MaterialContainer {
+impl<T: Material + 'static + Send> From<T> for MaterialContainer {
     fn from(value: T) -> Self {
         MaterialContainer {
             material: Box::new(value),

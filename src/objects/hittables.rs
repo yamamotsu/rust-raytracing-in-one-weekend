@@ -26,7 +26,7 @@ impl Hittables<Uuid> {
     }
 }
 
-impl<I: Sized> Hittable for Hittables<I> {
+impl<I: Sized + Sync> Hittable for Hittables<I> {
     fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord> {
         let hit_records = self
             .objects

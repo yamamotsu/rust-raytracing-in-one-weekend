@@ -10,6 +10,6 @@ pub struct HitRecord {
     pub material_id: Uuid,
 }
 
-pub trait Hittable {
+pub trait Hittable: Sync {
     fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord>;
 }

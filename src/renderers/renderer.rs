@@ -1,5 +1,5 @@
 use crate::world::World;
 
 pub trait Renderer {
-    fn render(&self, world: &World);
+    fn render(&self, world: &'static World);
 }

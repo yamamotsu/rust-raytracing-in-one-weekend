@@ -1,5 +1,9 @@
+use std::sync::mpsc;
+
 use log::debug;
 use rand::random;
+use threadpool::ThreadPool;
+use uuid::Uuid;
 
 use crate::{
     color::{write_color, Color},
@@ -8,7 +12,8 @@ use crate::{
         coordinate::CoordinateSystem,
     },
     interval::Interval,
-    objects::hittable::Hittable,
+    materials::material::Materials,
+    objects::{hittable::Hittable, hittables::Hittables},
     optical::ray::Ray,
     vectors::{
         ops::MatrixCross,
@@ -225,8 +230,9 @@ impl Camera {
 }
 
 impl Renderer for Camera {
-    fn render(&self, world: &World) {
+    fn render(&self, world: &'static World) {
         let render_params = self.initialize();
+        let thread_pool = ThreadPool::new(16);
 
         let Rect {
             width: image_width,
@@ -237,9 +243,21 @@ impl Renderer for Camera {
         for y in 0..image_height {
             debug!("\rScanlines remaining: {}   ", image_height - y);
             for x in 0..image_width {
-                let mut color: Color = Color::from((0.0, 0.0, 0.0));
+                let max_depth = self.max_depth;
+                let (tx, rx) = mpsc::channel::<Color>();
                 for _ in 0..self.samples_per_pixel {
-                    color += ray_color(&self.get_ray(x, y, render_params), world, self.max_depth);
+                    let tx = tx.clone();
+                    let ray = self.get_ray(x, y, render_params);
+
+                    thread_pool.execute(move || {
+                        let color = ray_color(&ray, world, max_depth);
+                        tx.send(color).unwrap();
+                    });
+                }
+                thread_pool.join();
+                let mut color: Color = Color::from((0.0, 0.0, 0.0));
+                for col in rx.iter().take(self.samples_per_pixel as usize) {
+                    color += col;
                 }
                 color /= self.samples_per_pixel as f32;
 

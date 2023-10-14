@@ -1,12 +1,12 @@
 use super::hittable::Hittable;
 
 pub struct ObjectContainer {
-    pub object: Box<dyn Hittable>,
+    pub object: Box<dyn Hittable + Send>,
 }
 
 impl ObjectContainer {}
 
-impl<T: Hittable + 'static> From<T> for ObjectContainer {
+impl<T: Hittable + 'static + Send> From<T> for ObjectContainer {
     fn from(value: T) -> Self {
         ObjectContainer {
             object: Box::new(value),
