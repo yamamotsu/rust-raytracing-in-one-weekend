@@ -7,6 +7,7 @@ mod objects;
 mod ray;
 mod vectors;
 
+use camera::{CameraGeometryParam, CameraOpticalParam, ImageSize};
 use color::Color;
 use env_logger;
 use materials::dielectric::DiElectric;
@@ -16,13 +17,11 @@ use materials::metal::Metal;
 use objects::hittable::{Hittables, ObjectContainer, Raycaster};
 use objects::sphere::Sphere;
 use rand::random;
-use std::collections::HashMap;
 use std::io::Write;
-use std::vec;
 use uuid::Uuid;
 use vectors::vector3::{Point3, Vector3};
 
-use crate::camera::{Camera, CameraParams};
+use crate::camera::Camera;
 
 const ASPECT_RATIO: f32 = 4.0 / 3.0; // 16.0 / 9.0;
 const IMAGE_WIDTH: u32 = 256;
@@ -127,17 +126,23 @@ fn main() {
     let camera_lookat = Point3::from((0.0, 0.0, 0.0));
     let camera_up = Vector3::from((0.0, 1.0, 0.0));
     let camera_fov = 20.0;
-    let camera = Camera::from(CameraParams {
-        aspect_ratio: ASPECT_RATIO,
-        image_width: IMAGE_WIDTH,
+    let camera = Camera {
+        image_size: ImageSize {
+            aspect_ratio: ASPECT_RATIO,
+            width: IMAGE_WIDTH,
+        },
+        geometry: CameraGeometryParam {
+            center: camera_center,
+            lookat: camera_lookat,
+            up: camera_up,
+        },
+        optical_params: CameraOpticalParam {
+            vfov_deg: camera_fov,
+            focus_dist: 10.0,
+            defocus_angle: 0.6,
+        },
         samples_per_pixel: SAMPLES_PER_PIXEL,
         max_depth: MAX_DEPTH,
-        vfov_deg: camera_fov,
-        center: camera_center,
-        lookat: camera_lookat,
-        up: camera_up,
-        focus_dist: 10.0,
-        defocus_angle: 0.6,
-    });
+    };
     camera.render(&world, &materials);
 }

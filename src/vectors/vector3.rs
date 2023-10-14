@@ -33,6 +33,14 @@ impl<T: Number> Vector3<T> {
         self / self.norm()
     }
 
+    pub fn zero() -> Vector3<T> {
+        Vector3::<T> {
+            x: T::zero(),
+            y: T::zero(),
+            z: T::zero(),
+        }
+    }
+
     pub fn random() -> Vector3 {
         Vector3 {
             x: rnd(),

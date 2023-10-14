@@ -1,7 +1,45 @@
-use crate::vectors::vector3::Vector3;
+use crate::vectors::vector3::{Point3, Vector3};
 
-pub struct Coordinate {
+pub struct Axes3D {
     pub u: Vector3,
     pub v: Vector3,
     pub w: Vector3,
+}
+impl Copy for Axes3D {}
+impl Clone for Axes3D {
+    fn clone(&self) -> Self {
+        Axes3D {
+            u: self.u,
+            v: self.v,
+            w: self.w,
+        }
+    }
+}
+
+pub struct Axes2D {
+    pub u: Vector3,
+    pub v: Vector3,
+}
+impl Copy for Axes2D {}
+impl Clone for Axes2D {
+    fn clone(&self) -> Self {
+        Axes2D {
+            u: self.u,
+            v: self.v,
+        }
+    }
+}
+
+pub struct CoordinateSystem {
+    pub axes: Axes3D,
+    pub origin: Point3,
+}
+impl Copy for CoordinateSystem {}
+impl Clone for CoordinateSystem {
+    fn clone(&self) -> Self {
+        CoordinateSystem {
+            axes: self.axes,
+            origin: self.origin,
+        }
+    }
 }
