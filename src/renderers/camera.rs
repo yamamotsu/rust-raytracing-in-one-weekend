@@ -1,19 +1,18 @@
 use std::sync::mpsc;
 
+use image::RgbImage;
 use log::debug;
 use rand::random;
 use threadpool::ThreadPool;
-use uuid::Uuid;
 
 use crate::{
-    color::{write_color, Color},
+    color::{get_rgb, Color},
     geometry::{
         axis::{Axes2D, Axes3D},
         coordinate::CoordinateSystem,
     },
     interval::Interval,
-    materials::material::Materials,
-    objects::{hittable::Hittable, hittables::Hittables},
+    objects::hittable::Hittable,
     optical::ray::Ray,
     vectors::{
         ops::MatrixCross,
@@ -230,7 +229,7 @@ impl Camera {
 }
 
 impl Renderer for Camera {
-    fn render(&self, world: &'static World) {
+    fn render(&self, world: &'static World) -> RgbImage {
         let render_params = self.initialize();
         let thread_pool = ThreadPool::new(16);
 
@@ -238,6 +237,8 @@ impl Renderer for Camera {
             width: image_width,
             height: image_height,
         } = render_params.image_rect;
+
+        let mut image = RgbImage::new(image_width, image_height);
 
         print!("P3\n{} {}\n255\n", image_width, image_height);
         for y in 0..image_height {
@@ -261,11 +262,13 @@ impl Renderer for Camera {
                 }
                 color /= self.samples_per_pixel as f32;
 
-                let mut string = &mut String::new();
-                write_color(&mut string, &color);
-                print!("{}", string);
+                image.put_pixel(x, y, get_rgb(&color));
+                // let mut string = &mut String::new();
+                // write_color(&mut string, &color);
+                // print!("{}", string);
             }
         }
         debug!("\rDone.                 \n");
+        image
     }
 }

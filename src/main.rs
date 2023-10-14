@@ -155,5 +155,7 @@ fn main() {
         max_depth: MAX_DEPTH,
     };
 
-    camera.render(&WORLD);
+    let img = camera.render(&WORLD);
+    img.save_with_format("test.png", image::ImageFormat::Png)
+        .unwrap();
 }

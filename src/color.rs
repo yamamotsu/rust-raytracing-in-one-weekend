@@ -1,3 +1,6 @@
+use image::Rgb;
+use num_traits::ToPrimitive;
+
 use crate::{interval::Interval, vectors::vector3::Vector3};
 use std::fmt;
 
@@ -17,6 +20,17 @@ pub fn write_color(output: &mut dyn std::fmt::Write, color: &Color) -> () {
         format_args!("{:.0} {:.0} {:.0}\n", rgb.x, rgb.y, rgb.z),
     )
     .unwrap()
+}
+
+pub fn get_rgb(color: &Color) -> Rgb<u8> {
+    let intensity: Interval = Interval::from((0.0, 0.999));
+    let _color = color.sqrt();
+    let rgb = [
+        (intensity.clamp(_color.x) * 256.0).to_u8().unwrap(),
+        (intensity.clamp(_color.y) * 256.0).to_u8().unwrap(),
+        (intensity.clamp(_color.z) * 256.0).to_u8().unwrap(),
+    ];
+    Rgb(rgb)
 }
 
 #[cfg(test)]
