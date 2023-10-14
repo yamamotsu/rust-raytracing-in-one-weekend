@@ -24,7 +24,7 @@ impl Material for Metal {
     fn scatter(
         &self,
         ray: &crate::ray::Ray,
-        hit_record: &crate::objects::hittable::HitRecord<'_>,
+        hit_record: &crate::objects::hittable::HitRecord,
     ) -> Option<Scatter> {
         let reflected = reflect(&ray.direction.to_unit(), &hit_record.norm)
             + Vector3::<f32>::random_unit_vector() * self.fuzzy;

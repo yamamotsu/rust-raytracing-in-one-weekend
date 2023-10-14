@@ -5,6 +5,7 @@ use crate::{
     color::{write_color, Color},
     coordinate::Coordinate,
     interval::Interval,
+    materials::material::Materials,
     objects::hittable::{Hittables, Raycaster},
     ray::Ray,
     vectors::{
@@ -33,14 +34,14 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn render(&self, world: &Hittables) {
+    pub fn render<I: Sized>(&self, world: &Hittables<I>, materials: &Materials) {
         print!("P3\n{} {}\n255\n", self.image_width, self.image_height);
         for y in 0..self.image_height {
             debug!("\rScanlines remaining: {}   ", self.image_height - y);
             for x in 0..self.image_width {
                 let mut color: Color = Color::from((0.0, 0.0, 0.0));
                 for _ in 0..self.samples_per_pixel {
-                    color += self.ray_color(&self.get_ray(x, y), world, self.max_depth);
+                    color += self.ray_color(&self.get_ray(x, y), world, materials, self.max_depth);
                 }
                 color /= self.samples_per_pixel as f32;
 
@@ -91,18 +92,29 @@ impl Camera {
         Color::from((direction.x + 1.0, direction.y + 1.0, direction.z + 1.0)) * 0.5
     }
 
-    fn ray_color(&self, ray: &Ray, world: &Hittables, depth: i32) -> Color {
+    fn ray_color<I: Sized>(
+        &self,
+        ray: &Ray,
+        world: &Hittables<I>,
+        materials: &Materials,
+        depth: i32,
+    ) -> Color {
         if depth <= 0 {
             return Color::from((0.0, 0.0, 0.0));
         }
 
         match world.hit(&ray, Interval::from((0.001, f32::INFINITY))) {
-            Some(result) => match result.material.scatter(ray, &result) {
-                Some(scattered) => {
-                    self.ray_color(&scattered.ray, world, depth - 1) * scattered.attenuation
+            Some(result) => {
+                let id = result.material_id.clone();
+                let material = &materials.materials[&id].material;
+                match material.scatter(ray, &result) {
+                    Some(scattered) => {
+                        self.ray_color(&scattered.ray, world, materials, depth - 1)
+                            * scattered.attenuation
+                    }
+                    None => Color::from((0.0, 0.0, 0.0)),
                 }
-                None => Color::from((0.0, 0.0, 0.0)),
-            },
+            }
             None => self.ray_color_background(&ray),
         }
     }

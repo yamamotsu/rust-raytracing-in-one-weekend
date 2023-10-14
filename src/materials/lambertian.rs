@@ -20,7 +20,7 @@ impl From<Color> for Lambertian {
 }
 
 impl Material for Lambertian {
-    fn scatter(&self, _: &Ray, hit_record: &HitRecord<'_>) -> Option<Scatter> {
+    fn scatter(&self, _: &Ray, hit_record: &HitRecord) -> Option<Scatter> {
         let _scatter_direction = Vector3::<f32>::random_unit_vector() + hit_record.norm;
         let scatter_direction = if near_zero(&_scatter_direction) {
             hit_record.norm

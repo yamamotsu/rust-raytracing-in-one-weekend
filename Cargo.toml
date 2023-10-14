@@ -7,6 +7,16 @@ edition = "2021"
 
 [dependencies]
 env_logger = "0.10.0"
+lazy_static = "1.4.0"
 log = "0.4.20"
 num-traits = "0.2.16"
 rand = "0.8.5"
+threadpool = "1.8.1"
+
+[dependencies.uuid]
+version = "^1.4.1"
+features = [
+    "v4",
+    "fast-rng",
+    "macro-diagnostics",
+]

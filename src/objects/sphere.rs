@@ -1,33 +1,17 @@
+use uuid::Uuid;
+
 use crate::materials::material::Material;
 use crate::objects::hittable::{HitRecord, Raycaster};
 use crate::{interval::Interval, ray::Ray, vectors::ops::MatrixDot, vectors::vector3::Point3};
 
-pub struct Sphere<'t, Mat: Material> {
+pub struct Sphere {
     pub r: f32,
     pub center: Point3,
-    pub material: &'t Mat,
-}
-// impl<T> Sphere<'_, T> {
-//     pub fn new() -> Self {
-//         Sphere::<'_, T> {
-//             r: 1.0,
-//             center: Point3::from((0.0, 0.0, 0.0)),
-//         }
-//     }
-// }
-
-impl<'t, Mat: Material> From<(f32, Point3, &'t Mat)> for Sphere<'t, Mat> {
-    fn from(value: (f32, Point3, &'t Mat)) -> Self {
-        Sphere::<'t, Mat> {
-            r: value.0,
-            center: value.1,
-            material: value.2,
-        }
-    }
+    pub material_id: Uuid,
 }
 
-impl<Mat: Material> Raycaster for Sphere<'_, Mat> {
-    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord<'_>> {
+impl Raycaster for Sphere {
+    fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord> {
         let direction = &ray.direction;
         let origin_to_sphere = ray.origin - self.center;
         let a = direction.norm_squared();
@@ -62,12 +46,12 @@ impl<Mat: Material> Raycaster for Sphere<'_, Mat> {
             // ensure that norm is always against ray
             norm *= -1.0;
         }
-        Some(HitRecord::<'_> {
+        Some(HitRecord {
             point,
             norm,
             t: root,
             front_face,
-            material: self.material,
+            material_id: self.material_id,
         })
     }
 }

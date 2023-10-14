@@ -14,7 +14,7 @@ impl Material for DiElectric {
     fn scatter(
         &self,
         ray: &crate::ray::Ray,
-        hit_record: &crate::objects::hittable::HitRecord<'_>,
+        hit_record: &crate::objects::hittable::HitRecord,
     ) -> Option<super::material::Scatter> {
         let refraction_ratio = if hit_record.front_face {
             1.0 / self.index_of_refraction
