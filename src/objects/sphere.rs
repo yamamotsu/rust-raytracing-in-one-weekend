@@ -1,7 +1,7 @@
 use uuid::Uuid;
 
 use crate::materials::material::Material;
-use crate::objects::hittable::{HitRecord, Raycaster};
+use crate::objects::hittable::{HitRecord, Hittable};
 use crate::{interval::Interval, ray::Ray, vectors::ops::MatrixDot, vectors::vector3::Point3};
 
 pub struct Sphere {
@@ -10,7 +10,7 @@ pub struct Sphere {
     pub material_id: Uuid,
 }
 
-impl Raycaster for Sphere {
+impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, interval: Interval) -> Option<HitRecord> {
         let direction = &ray.direction;
         let origin_to_sphere = ray.origin - self.center;

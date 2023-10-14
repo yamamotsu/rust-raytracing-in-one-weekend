@@ -1,27 +1,29 @@
-mod camera;
 mod color;
 mod coordinate;
 mod interval;
 mod materials;
 mod objects;
 mod ray;
+mod renderers;
 mod vectors;
+mod world;
 
-use camera::{CameraGeometryParam, CameraOpticalParam, ImageSize};
 use color::Color;
 use env_logger;
 use materials::dielectric::DiElectric;
 use materials::lambertian::Lambertian;
 use materials::material::{MaterialContainer, Materials};
 use materials::metal::Metal;
-use objects::hittable::{Hittables, ObjectContainer, Raycaster};
+use objects::container::ObjectContainer;
+use objects::hittables::Hittables;
 use objects::sphere::Sphere;
 use rand::random;
+use renderers::camera::{Camera, CameraGeometryParam, CameraOpticalParam, ImageSize};
+use renderers::renderer::Renderer;
 use std::io::Write;
 use uuid::Uuid;
 use vectors::vector3::{Point3, Vector3};
-
-use crate::camera::Camera;
+use world::World;
 
 const ASPECT_RATIO: f32 = 4.0 / 3.0; // 16.0 / 9.0;
 const IMAGE_WIDTH: u32 = 256;
@@ -36,7 +38,7 @@ fn main() {
         .init();
 
     let mut materials: Materials = Materials::new();
-    let mut world: Hittables<Uuid> = Hittables::new();
+    let mut objects: Hittables<Uuid> = Hittables::new();
 
     let material_ground = MaterialContainer::from(Lambertian {
         albedo: Color::from((0.5, 0.5, 0.5)),
@@ -80,11 +82,11 @@ fn main() {
     materials.insert(material_left);
     materials.insert(material_right);
 
-    world.insert(ObjectContainer::from(ground));
-    world.insert(ObjectContainer::from(sphere_center));
-    world.insert(ObjectContainer::from(sphere_left));
-    world.insert(ObjectContainer::from(sphere_left_inside));
-    world.insert(ObjectContainer::from(sphere_right));
+    objects.insert(ObjectContainer::from(ground));
+    objects.insert(ObjectContainer::from(sphere_center));
+    objects.insert(ObjectContainer::from(sphere_left));
+    objects.insert(ObjectContainer::from(sphere_left_inside));
+    objects.insert(ObjectContainer::from(sphere_right));
 
     for a in -11..11 {
         for b in -11..11 {
@@ -112,7 +114,7 @@ fn main() {
                         index_of_refraction: 1.5,
                     })
                 };
-                world.insert(ObjectContainer::from(Sphere {
+                objects.insert(ObjectContainer::from(Sphere {
                     r: 0.2,
                     center,
                     material_id: material.id,
@@ -144,5 +146,6 @@ fn main() {
         samples_per_pixel: SAMPLES_PER_PIXEL,
         max_depth: MAX_DEPTH,
     };
-    camera.render(&world, &materials);
+    let world = World { objects, materials };
+    camera.render(&world);
 }

@@ -1,5 +1,3 @@
-use core::num;
-
 use log::debug;
 use rand::random;
 
@@ -8,13 +6,16 @@ use crate::{
     coordinate::{Axes2D, Axes3D, CoordinateSystem},
     interval::Interval,
     materials::material::Materials,
-    objects::hittable::{Hittables, Raycaster},
+    objects::{hittable::Hittable, hittables::Hittables},
     ray::Ray,
     vectors::{
         ops::MatrixCross,
         vector3::{Point3, Vector3},
     },
+    world::World,
 };
+
+use super::renderer::Renderer;
 
 fn ray_color_background(r: &Ray) -> Color {
     let dir = r.direction.to_unit();
@@ -49,6 +50,16 @@ fn ray_color<I: Sized>(
         }
         None => ray_color_background(&ray),
     }
+}
+/// Returns a random point in the square surrounding a pixel at the origin.
+fn pixel_sample_square(coord: CoordinateSystem) -> Vector3 {
+    let px = -0.5 + random::<f32>();
+    let py = -0.5 + random::<f32>();
+    (coord.axes.u * px) + (coord.axes.v * py)
+}
+fn defocus_disk_sample(center: Vector3, defocus_disk_axes: Axes2D) -> Point3 {
+    let p = Vector3::<f32>::random_in_unit_disk();
+    center + (defocus_disk_axes.u * p.x) + (defocus_disk_axes.v * p.y)
 }
 
 pub struct CameraGeometryParam {
@@ -118,38 +129,6 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn render<I: Sized>(&self, world: &Hittables<I>, materials: &Materials) {
-        let render_params = self.initialize();
-
-        let Rect {
-            width: image_width,
-            height: image_height,
-        } = render_params.image_rect;
-
-        print!("P3\n{} {}\n255\n", image_width, image_height);
-        for y in 0..image_height {
-            debug!("\rScanlines remaining: {}   ", image_height - y);
-            for x in 0..image_width {
-                let mut color: Color = Color::from((0.0, 0.0, 0.0));
-                for _ in 0..self.samples_per_pixel {
-                    color += ray_color(
-                        &self.get_ray(x, y, render_params),
-                        world,
-                        materials,
-                        self.max_depth,
-                    );
-                }
-                color /= self.samples_per_pixel as f32;
-
-                let mut string = &mut String::new();
-                write_color(&mut string, &color);
-                print!("{}", string);
-            }
-        }
-
-        debug!("\rDone.                 \n");
-    }
-
     fn initialize(&self) -> RenderingParameters {
         let CameraGeometryParam { center, lookat, up } = self.geometry;
         let ImageSize {
@@ -238,26 +217,48 @@ impl Camera {
         let image_coord = rendering_params.image_coord;
         let pixel_center =
             image_coord.origin + (image_coord.axes.u * x as f32) + (image_coord.axes.v * y as f32);
-        let pixel_sample = pixel_center + self.pixel_sample_square(image_coord);
+        let pixel_sample = pixel_center + pixel_sample_square(image_coord);
 
         let ray_origin = if self.optical_params.defocus_angle <= 0.0 {
             self.geometry.center
         } else {
-            self.defocus_disk_sample(rendering_params.defocus_disk_axes)
+            defocus_disk_sample(self.geometry.center, rendering_params.defocus_disk_axes)
         };
         let ray_direction = (pixel_sample - ray_origin).to_unit();
         Ray::from((ray_origin, ray_direction))
     }
+}
 
-    fn defocus_disk_sample(&self, defocus_disk_axes: Axes2D) -> Point3 {
-        let p = Vector3::<f32>::random_in_unit_disk();
-        self.geometry.center + (defocus_disk_axes.u * p.x) + (defocus_disk_axes.v * p.y)
-    }
+impl Renderer for Camera {
+    fn render(&self, world: &World) {
+        let World { objects, materials } = world;
+        let render_params = self.initialize();
 
-    /// Returns a random point in the square surrounding a pixel at the origin.
-    fn pixel_sample_square(&self, coord: CoordinateSystem) -> Vector3 {
-        let px = -0.5 + random::<f32>();
-        let py = -0.5 + random::<f32>();
-        (coord.axes.u * px) + (coord.axes.v * py)
+        let Rect {
+            width: image_width,
+            height: image_height,
+        } = render_params.image_rect;
+
+        print!("P3\n{} {}\n255\n", image_width, image_height);
+        for y in 0..image_height {
+            debug!("\rScanlines remaining: {}   ", image_height - y);
+            for x in 0..image_width {
+                let mut color: Color = Color::from((0.0, 0.0, 0.0));
+                for _ in 0..self.samples_per_pixel {
+                    color += ray_color(
+                        &self.get_ray(x, y, render_params),
+                        objects,
+                        materials,
+                        self.max_depth,
+                    );
+                }
+                color /= self.samples_per_pixel as f32;
+
+                let mut string = &mut String::new();
+                write_color(&mut string, &color);
+                print!("{}", string);
+            }
+        }
+        debug!("\rDone.                 \n");
     }
 }
