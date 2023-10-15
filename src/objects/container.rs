@@ -1,3 +1,5 @@
+use crate::vectors::vector3::{Point3, Vector3};
+
 use super::hittable::Hittable;
 
 pub struct ObjectContainer {

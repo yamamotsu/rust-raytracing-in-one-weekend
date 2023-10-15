@@ -6,6 +6,14 @@ pub struct CoordinateSystem {
     pub axes: Axes3D,
     pub origin: Point3,
 }
+
+impl CoordinateSystem {
+    pub const UNIVERSE: CoordinateSystem = CoordinateSystem {
+        axes: Axes3D::UNIVERSE,
+        origin: Point3::ZERO,
+    };
+}
+
 impl Copy for CoordinateSystem {}
 impl Clone for CoordinateSystem {
     fn clone(&self) -> Self {

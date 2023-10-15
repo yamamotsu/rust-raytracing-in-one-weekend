@@ -14,6 +14,29 @@ fn random_range(min: f32, max: f32) -> f32 {
 pub type Point3 = Vector3;
 
 impl<T: Number> Vector3<T> {
+    pub const UNIT_X: Vector3<f32> = Vector3 {
+        x: 1.0,
+        y: 0.0,
+        z: 0.0,
+    };
+    pub const UNIT_Y: Vector3<f32> = Vector3 {
+        x: 0.0,
+        y: 1.0,
+        z: 0.0,
+    };
+    pub const UNIT_Z: Vector3<f32> = Vector3 {
+        x: 0.0,
+        y: 0.0,
+        z: 1.0,
+    };
+    pub const ZERO: Vector3<f32> = Vector3 {
+        x: 0.0,
+        y: 0.0,
+        z: 0.0,
+    };
+}
+
+impl<T: Number> Vector3<T> {
     pub fn norm(self) -> T {
         T::sqrt(self.norm_squared())
     }
@@ -40,7 +63,6 @@ impl<T: Number> Vector3<T> {
             z: T::zero(),
         }
     }
-
     pub fn random() -> Vector3 {
         Vector3 {
             x: rnd(),

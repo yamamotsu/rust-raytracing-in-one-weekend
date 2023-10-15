@@ -38,11 +38,7 @@ impl Hittable for Sphere {
 
         let point = ray.at(root);
         let mut norm = (point - self.center) / self.r;
-        let front_face = if direction.dot(&norm) < 0.0 {
-            true
-        } else {
-            false
-        };
+        let front_face = direction.dot(&norm) < 0.0;
         if front_face == false {
             // ensure that norm is always against ray
             norm *= -1.0;
