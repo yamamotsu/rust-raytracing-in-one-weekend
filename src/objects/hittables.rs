@@ -28,18 +28,20 @@ impl Hittables<Uuid> {
 
 impl<I: Sized + Sync> Hittable for Hittables<I> {
     fn hit(&self, ray: &Ray, interval: Interval<f32>) -> Option<HitRecord> {
-        let hit_records = self
-            .objects
-            .values()
-            .clone()
-            .into_iter()
-            .filter_map(|obj| obj.object.hit(ray, interval));
-        hit_records.reduce(|accumulator, hit| {
-            if hit.t < accumulator.t {
-                hit
-            } else {
-                accumulator
+        let mut current_interval = Interval {
+            min: interval.min,
+            max: interval.max,
+        };
+        let mut current_record: Option<HitRecord> = None;
+        for (_, object) in &self.objects {
+            match object.object.hit(ray, current_interval) {
+                Some(record) => {
+                    current_interval.max = record.t;
+                    current_record = Some(record);
+                }
+                None => {}
             }
-        })
+        }
+        current_record
     }
 }
