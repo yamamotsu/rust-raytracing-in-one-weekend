@@ -16,8 +16,8 @@ use materials::dielectric::DiElectric;
 use materials::lambertian::Lambertian;
 use materials::material::{MaterialContainer, Materials};
 use materials::metal::Metal;
-use objects::container::ObjectContainer;
 use objects::hittables::Hittables;
+use objects::object::Object;
 use objects::plane::Plane;
 use objects::sphere::Sphere;
 use rand::random;
@@ -109,12 +109,12 @@ fn initialize_world() -> World {
     materials.insert(material_right);
     materials.insert(material_mirror);
 
-    objects.insert(ObjectContainer::from(ground));
-    objects.insert(ObjectContainer::from(sphere_center));
-    objects.insert(ObjectContainer::from(sphere_center_inside));
-    objects.insert(ObjectContainer::from(sphere_left));
-    objects.insert(ObjectContainer::from(sphere_right));
-    objects.insert(ObjectContainer::from(plane_mirror));
+    objects.insert(Object::from(ground));
+    objects.insert(Object::from(sphere_center));
+    objects.insert(Object::from(sphere_center_inside));
+    objects.insert(Object::from(sphere_left));
+    objects.insert(Object::from(sphere_right));
+    objects.insert(Object::from(plane_mirror));
 
     for a in -11..11 {
         for b in -11..11 {
@@ -142,7 +142,7 @@ fn initialize_world() -> World {
                         index_of_refraction: 1.5,
                     })
                 };
-                objects.insert(ObjectContainer::from(Sphere {
+                objects.insert(Object::from(Sphere {
                     r: 0.2,
                     center,
                     material_id: material.id,

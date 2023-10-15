@@ -19,7 +19,6 @@ pub struct Plane {
     pub width: f32,
     pub height: f32,
 }
-
 impl Plane {
     fn get_plane00_loc(&self) -> Point3 {
         self.coordinate.origin
